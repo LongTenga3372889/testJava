@@ -1,4 +1,4 @@
-package com.test.test.asynIO;
+package com.test.test.asynIO.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
-public class NIOAsynService implements Runnable {
+/**
+ * NIO服务端
+ */
+public class NIOAsynServiceHandler implements Runnable {
 
-    private final static Logger logger = LoggerFactory.getLogger(NIOAsynService.class);
+    private final static Logger logger = LoggerFactory.getLogger(NIOAsynServiceHandler.class);
 
     private Selector selector;
 
@@ -24,12 +27,17 @@ public class NIOAsynService implements Runnable {
 
     private volatile boolean stop;
 
-    public NIOAsynService(int port) {
+    public NIOAsynServiceHandler(int port) {
         try {
+            //多路复用器
             selector = Selector.open();
+            //服务端监听
             serverSocketChannel = ServerSocketChannel.open();
+            //非阻塞模式
             serverSocketChannel.configureBlocking(false);
-            serverSocketChannel.socket().bind(new InetSocketAddress(port), 1024);
+            //监听端口
+            serverSocketChannel.socket().bind(new InetSocketAddress(port), 2);
+            //多路复用器注册在监听端口，监听OP_ACCEPT事件
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             logger.info("NIO service start success port is {}", port);
         } catch (IOException e) {
@@ -86,8 +94,8 @@ public class NIOAsynService implements Runnable {
                     byte[] bytes = new byte[byteBuffer.remaining()];
                     byteBuffer.get(bytes);
                     String body = new String(bytes, StandardCharsets.UTF_8);
-                    logger.info("client is say is {}", body);
-                    returnMessage(socketChannel, "hello");
+                    logger.info("client is say {}", body);
+                    returnMessage(socketChannel, "service say hello\n");
                 }else if (readBytes<0){
                     selectionKey.cancel();
                     socketChannel.close();
