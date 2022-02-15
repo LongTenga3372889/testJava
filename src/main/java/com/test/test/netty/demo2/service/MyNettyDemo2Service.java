@@ -20,7 +20,7 @@ public class MyNettyDemo2Service extends ChannelHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String message = (String) msg;
         logger.info("client send count is {}, time is {} ,message is {}", ++count, new Date().getTime(), message);
-        ByteBuf byteBuf = Unpooled.copiedBuffer((message+"$_").getBytes(StandardCharsets.UTF_8));
+        ByteBuf byteBuf = Unpooled.copiedBuffer(("hello client.$_").getBytes(StandardCharsets.UTF_8));
         ctx.writeAndFlush(byteBuf);
     }
 
