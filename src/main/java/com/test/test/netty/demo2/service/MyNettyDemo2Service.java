@@ -4,19 +4,19 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-public class MyNettyDemo2Service extends ChannelHandlerAdapter {
+public class MyNettyDemo2Service extends ChannelInboundHandlerAdapter {
 
     private final static Logger logger = LoggerFactory.getLogger(MyNettyDemo2Service.class);
 
     private int count = 0;
 
-    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String message = (String) msg;
         logger.info("client send count is {}, time is {} ,message is {}", ++count, new Date().getTime(), message);

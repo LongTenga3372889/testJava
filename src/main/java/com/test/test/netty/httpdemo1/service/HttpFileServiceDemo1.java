@@ -10,6 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpRequestEncoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 public class HttpFileServiceDemo1 {
@@ -18,7 +20,7 @@ public class HttpFileServiceDemo1 {
 
     private static final String host = "127.0.0.1";
 
-    private static final int port = 8000;
+    private static final int port = 8080;
 
     public static void main(String[] args) throws InterruptedException {
         new HttpFileServiceDemo1().start();
@@ -30,6 +32,7 @@ public class HttpFileServiceDemo1 {
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup,workGroup).channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -37,7 +40,7 @@ public class HttpFileServiceDemo1 {
                                     .addLast("http-aggregator",new HttpObjectAggregator(65536))
                                     .addLast("http-encoder",new HttpRequestEncoder())
                                     .addLast("http-chunked",new ChunkedWriteHandler())
-                                    .addLast("fileServerHandler",new HttpFileServiceHandler(uri));
+                                    .addLast(new HttpFileServiceHandler(uri));
                         }
                     });
             ChannelFuture future = serverBootstrap.bind(host,port).sync();
